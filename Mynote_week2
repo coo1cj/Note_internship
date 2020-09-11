@@ -1,0 +1,44 @@
+NITFilter::NITFilter(unsigned int fifoFrameSize) : impl(new ::NITFilterBridge(fifoFrameSize))
+{
+	using namespace System;
+	NewFrameDelegate^ delgate = gcnew NewFrameDelegate(this, &NITFilter::onNewImage);  // 定义
+
+一个委托指向onNewImage这个函数
+	gch = GCHandle::Alloc(delgate);  //增加一个引用来指向这个委托
+	IntPtr ptr = Marshal::GetFunctionPointerForDelegate(delgate);  //将这个委托转换成一个value，这
+
+个value可以被c++代码函数所调用
+	CallbackFunc cb = static_cast<CallbackFunc>(ptr.ToPointer());  //将返回的value值转换成
+
+CallbackFunc这个函数指针
+	impl->setCallback(cb); // 使得bridge中的指针指向cb， 也就是委托的函数， 在bridge的构造函数中
+
+就会调用此函数，也就实现了c#中的函数在c++函数库中实现的目的。
+}
+
+
+
+对于函数中bridge类的总结: 首先这个类是c++类，目的是为了链接C#和C++的函数，因为c#的函数直接在C++中代码使用会出问题，所以首先要将c#函数用委托封装，然后将委托的对象转换成c++原生指针，传给bridge
+
+中的setCallback函数，这样在bridge类中的函数指针CallbackFunc就会指向这个传过来的指针，也就是在C++里用指针指向了我们的C#函数。 当调用C#对象中onxxxCallback函数时也就是调用了C#中最初想要实现的函
+
+数。
+
+
+
+对gcnew的理解： gcnew会在托管堆上开辟一片内存用来存某个句柄的引用对象，即该句柄指向这个内存。 此时默认情况下不需要手动进行delete释放内存，因为托管堆在GC（垃圾回收站）的监视下，在此句柄离开作用
+
+于之后会自动回收这个内存。 但如果该句柄在长时间里仍在此作用域下，而且不需要用到其引用的对象时，可以将句柄赋值为nullptr来减少其引用计数（指向该内存的句柄数量）。另外，也可以对句柄调用delete，它会马
+
+上运行析构函数（Dispose函数），但这块内存仍不会被回收，直到垃圾回收器决定回收它。
+
+
+Debug和release的区别：  Debug没有任何的优化编译，所以相比release会占更多的内存（容量会大很多），且会插入大量的检查，可以更早的发现问题，速度也会慢点。 
+release会有优化编译的步骤，使得程序在代码大小和运行速度上都是最优的，但是断点就不管用，想找bug得用debug
+
+
+
+用户在gcnew之后想要手动调用析构方法就要实现IDisposable接口，通过编写Dispose（）函数来显式地释放资源，而如果是自动的由GC回收对象这种不确定时间的解构方法是由！类名（）来实现的
+
+
+把Dispose(bool disposing)方法设置为protected virtual的原因是希望有子类可以一起参与到垃圾回收逻辑的设计，而且还不会影响到基类
