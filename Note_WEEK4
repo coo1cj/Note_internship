@@ -39,3 +39,184 @@ int main()
 实际上std::move不能移动任何东西，因为移动赋值是通过对操作符=的重载（参数是右值引用）来实现的，move函数只是把一个左值强制转换成右值引用，继而使用右值引用来使用该值，功能类似于static_cast<T&&>lvalue
 
 x的类型是右值引用，指向一个右值，但x本身是左值还是右值呢？  既可以是左值也可以是右值，区分是是否有变量名，若有名则是左值，否则是右值
+
+
+
+// Test_shared_ptr.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <memory>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int& foo() {
+	int a = 2;
+	return a;
+}
+
+
+class Intvec
+{
+public:
+	explicit Intvec(size_t num = 0)
+		: m_size(num), m_data(new int[m_size])
+	{
+		log("constructor");
+	}
+
+	~Intvec()
+	{
+		log("destructor");
+		if (m_data) {
+			delete[] m_data;
+			m_data = 0;
+		}
+	}
+
+	Intvec(const Intvec& other)
+		: m_size(other.m_size), m_data(new int[m_size])
+	{
+		log("copy constructor");
+		for (size_t i = 0; i < m_size; ++i)
+			m_data[i] = other.m_data[i];
+	}
+
+	Intvec& operator=(const Intvec& other)
+	{
+		log("copy assignment operator");
+		Intvec tmp(other);
+		std::swap(m_size, tmp.m_size);
+		std::swap(m_data, tmp.m_data);
+		return *this;
+	}
+private:
+	void log(const char* msg)
+	{
+		cout << "[" << this << "] " << msg << "\n";
+	}
+
+	size_t m_size;
+	int* m_data;
+};
+
+
+class myString {
+	size_t length;
+	char* data;
+public:
+	myString(): length(0), data(NULL) {}
+
+	myString(const char* str) {
+		cout << "[" <<  this << "]" << "Constructer is called " << endl;
+		/*int i = 0;
+		while (!str) {
+			data[i] = *str;
+			i++;
+			str++;
+		}
+		length = i;*/
+		
+		length = strlen(str);
+		data = new char[length + 1];
+		memcpy(data, str, length);
+	}
+
+	// Copy
+	myString(const myString& str) {
+		cout << "[" <<  this << "]" << "Copy constructer is called " << endl;
+		this->data = str.data;
+		this->length = str.length;
+	}
+
+	myString& operator=(const myString& str) {
+		cout <<  "[" << this << "]" << "Copy assignment constructer is called " << endl;
+		if (this != &str) {
+			if (this->data) {
+				delete data;
+				this->data = NULL;
+			}
+			this->length = str.length;
+			this->data = new char[str.length + 1];
+			memcpy(this->data, str.data, this->length);
+		}
+		return *this;
+	}
+
+	// Move
+	myString(myString&& str) {
+		cout << "[" << this << "]" << "Move constructer is called " << endl;
+		this->data = str.data;
+		this->length = str.length;
+		str.data = NULL;
+	}
+
+	myString& operator=(myString&& str) {
+		cout << "[" << this << "]" << "Move assignment is called " << endl;
+		if (this != &str) {
+			this->data = str.data;
+			this->length = str.length;
+			str.data = NULL;
+		}
+		return *this;
+	}
+
+	~myString() {
+		cout << "[" << this << "]" << "Destructer is called " << endl;
+		if(data)
+			delete data; 
+		data = 0; 
+	}
+
+	char operator[](int pos) const {
+		return *(data + pos);
+	}
+
+
+
+
+	friend ostream& operator<<(ostream& out, myString& str) {
+		for (int i = 0; i < str.length; i++) {
+			cout.put(str[i]);
+		}
+
+		return out;
+	}
+
+
+};
+
+
+
+
+
+int main()
+{
+	/*Intvec v1(20);
+	Intvec v2;
+
+	cout << "assigning lvalue...\n";
+	v2 = v1;
+	cout << "ended assigning lvalue...\n";
+
+
+	std::string x1 = "hello, world!";
+	std::string x2 = std::move(x1);
+	cout << "x1 = " << x1 << endl;
+	cout << "x2 = " << x2 << endl;*/
+
+	myString str = "qsdqsd";
+	myString s1 = move(str);
+
+	myString s;
+	cout << sizeof(str) << endl;
+	cout << sizeof(s1) << endl;
+	cout << sizeof(s) << endl;
+	cout << s1 << endl;
+	cout << s << endl;
+
+}
+
+
