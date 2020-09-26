@@ -41,3 +41,6 @@ unique_ptr<A> a = F();
 ##### - shared_ptr： 以引用计数的方式进行赋值，每有一个智能指针share_ptr指向一个对象，则计数+1，每一个智能指针失去所有权就-1，到计数超过一定限制或者变为0时，所指对象被释放。
 
 ##### - weak_ptr： 好像是指向对象时不会产生引用计数，也就是不会加1，在循环引用share_ptr时可以解决这个问题
+
+
+#### 如何使用： 当使用uniqe_ptr和shared_ptr时，可以直接shared_ptr<T>(new T)或者用make_share<T>()
