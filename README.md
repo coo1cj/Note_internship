@@ -10,3 +10,5 @@
 - [WEEK 3](https://github.com/coo1cj/Note_internship/blob/master/note_WEEK3.md) :star:
 
 - [WEEK 4](https://github.com/coo1cj/Note_internship/blob/master/Note_WEEK4.md) :star2:
+
+- [WEEK 5](https://github.com/coo1cj/Note_internship/blob/master/Note_WEEK5.md) :+1:
