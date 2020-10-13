@@ -41,6 +41,9 @@ int main()
 
 x的类型是右值引用，指向一个右值，但x本身是左值还是右值呢？  既可以是左值也可以是右值，区分是是否有变量名，若有名则是左值，否则是右值
 
+比较好的参考网站[这里](https://www.bogotobogo.com/cplusplus/C11/5_C11_Move_Semantics_Rvalue_Reference.php)
+
+
 ### 以下是网上的例子以及个人对string类的编写
 
 ```
