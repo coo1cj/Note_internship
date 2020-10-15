@@ -69,3 +69,10 @@ const int &r2 = i;  // 正确：const int& 可以绑定到一个普通 int 上
 
 对于栈堆的一些理解[参考](https://www.cnblogs.com/carsonzhu/p/12612417.html)
 
+### RAII
+Resource Acquisition Is Initialization，RAII 依托栈和析构函数，来对所有的资源包括堆内存在内进行管理。对 RAII 的使用，使得 C++ 不需要类似于 Java 那样的垃圾收集方法，也能有效地对内存进行管理。RAII 的存在，也是垃圾收集虽然理论上可以在 C++ 使用，但从来没有真正流行过的主要原因。在析构函数里做必要的清理工作，这就是 RAII 的基本用法。这种清理并不限于释放内存，也可以是：
+- 关闭文件（`fstream` 的析构就会这么做）
+- 释放同步锁（std::lock_guard<std::mutex> guard(mtx)）
+- 释放其他重要的系统资源
+
+
