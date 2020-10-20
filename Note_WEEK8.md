@@ -4,7 +4,20 @@ static_cast<T>, dynamic_cast<T>, const_cast<T>, reinterpret_cast<T>
 
 - static_cast<T>: 它可以用于类型之间的任何常规转换，依赖于静态（编译时）类型信息的转换。这包括数值类型之间的任何强制转换（例如：从short到int或从int到float）、指针和引用的强制转换（向上转换）。
 
-- dynamic_cast<T>: 它只能与指向对象的指针和引用一起使用。它几乎专门用于处理多态性。它确保类型转换的结果是请求类的有效且完整的对象。确保我们是否安全地将一个对象的地址赋值给一个特殊的指针（类的向下转换时downcasting）。
+- dynamic_cast<T>(expression): 该运算符把expression转换成T类型的对象。T必须是类的指针、类的引用或者void*；如果T是类指针类型，那么expression也必须是一个指针，如果T是一个引用，那么expression也必须是一个引用。它几乎专门用于处理多态性。它确保类型转换的结果是请求类的有效且完整的对象。确保我们是否安全地将一个对象的地址赋值给一个特殊的指针（类的向下转换时downcasting）。
+  
+```
+class Widget{};
+class SpecialWidget:public Widget{};
+void update(SpecialWidget  *psw);
+
+Widget * pw;
+...
+
+//如果pw所指的是SpecialWidget ，那么就传递过去；如果pw指的是Widget ，
+//那么传递过去的值是null
+update(dynamic_cast<SpecialWidget  *> (pw)); 
+```
 
 伟人曾经说过：
 "The need for dynamic_cast generally arises because we want perform derived class operation on a derived class object, but we have only a pointer-or reference-to-base." -Scott Meyers
