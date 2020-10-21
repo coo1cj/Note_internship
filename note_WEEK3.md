@@ -44,3 +44,6 @@ unique_ptr<A> a = F();
 
 
 #### 如何使用： 当使用uniqe_ptr和shared_ptr时，可以直接shared_ptr<T>(new T)或者用make_share<T>()
+  
+  
+对于auto_ptr不能作为STL中容器元素的原因如下 [原因](https://blog.csdn.net/messiran10/article/details/52269813), 解释得挺好
