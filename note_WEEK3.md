@@ -47,3 +47,5 @@ unique_ptr<A> a = F();
   
   
 对于auto_ptr不能作为STL中容器元素的原因如下 [原因](https://blog.csdn.net/messiran10/article/details/52269813), 解释得挺好
+
+[参考链接](https://juejin.im/post/6844903993055920141#heading-16)
